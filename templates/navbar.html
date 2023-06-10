@@ -1,0 +1,10 @@
+Hello Ran
+<br>
+<br>
+{% for item in cat %}
+<a href="/{{item.cat}}">{{item.cat}}</a>&nbsp;
+{% endfor %}
+<a href="/add_article">add article</a>
+<a href="/logout">logout</a>
+<h2>{% block title %}{% endblock %}</h2>
+<hr>

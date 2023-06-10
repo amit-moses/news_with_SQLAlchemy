@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}News{% endblock %}
+{% block content %}
+<form action="/article/{{ id_k }}" method="POST">
+    <label for="title">Title:</label><br>
+    <input type="text" id="title" name="title" requiredz value="{{ values.title }}"><br><br>
+
+    <label for="content">Content:</label><br>
+    <textarea id="content" name="content" rows="4" cols="50" required>{{ values.content }}</textarea><br><br>
+
+    <label for="image-url">Image URL:</label><br>
+    <input type="url" id="image-url" name="image-url" value="{{ values.image }}" required><br><br>
+
+    <label for="category">Category:</label><br>
+    <select id="category" name="category" required>
+        {% for item in cat %}
+        <option id="check_{{ item.id }}" value="{{ item.id }}">{{ item.cat }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <input type="submit" value="Submit">
+</form>
+<script>
+    document.getElementById("check_{{values.category}}").selected = "true";
+</script>
+{% endblock %}
