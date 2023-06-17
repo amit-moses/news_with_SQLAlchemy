@@ -2,20 +2,19 @@
 {% block title %}News{% endblock %}
 {% block content %}
 
-<div class="card-group">
-    {% for article in news %}
-    <div class="card" style="max-width: 18rem;">
-        <img src="{{ article.image }}" class="card-img-top" alt="...">
-        <div class="card-body">
-            <h5 class="card-title">{{ article.title }}</h5>
-            <p class="card-text">{{ article.content }}</p>
-            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-            <form method="POST" action="delete/{{ article.id }}">
-                <input type="submit" value="Delete"class="btn btn-danger">
-                <a href="article/{{ article.id }}" class="btn btn-primary">Edit</a>
-            </form>
+{% for article in news %}
+<div class="col-sm-4">
+    <div class="panel panel-primary">
+        <div class="panel-heading">{{ article.title }}</div>
+        <div class="panel-body"><img src="{{ article.image }}" class="img-responsive" style="width:100%" alt="Image">
         </div>
+        <div class="panel-body">{{ article.content }}</div>
+        <form method="POST" action="delete/{{ article.id }}">
+            <input type="submit" value="Delete" class="btn btn-danger">
+            <a href="article/{{ article.id }}" class="btn btn-primary">Edit</a>
+        </form>
     </div>
-    {% endfor %}
 </div>
+{% endfor %}
+
 {% endblock %}

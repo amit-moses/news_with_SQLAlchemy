@@ -24,9 +24,10 @@ def news(pg = ''):
    pks = Categorey.query.filter(Categorey.cat.ilike(pg)).all()
    if len(pks) > 0:
       articles = Article.query.filter(Article.category.ilike(pks[0].id)).all()
+      return render_template("article.html", news=articles, cat=Categorey.query.all(), pg = pks[0].id)
    else:
       articles = Article.query.all()
-   return render_template("article.html", news=articles, cat=Categorey.query.all())
+      return render_template("article.html", news=articles, cat=Categorey.query.all(), pg = -1)
 
 @app.route("/delete/<id>", methods=["GET","POST"])
 def delete(id):
@@ -62,7 +63,8 @@ def add_article(id = 0):
       if id != 0 and len(res) > 0:
          res = res[0]
          id_k = res.id
-      return render_template("add_article.html", cat=Categorey.query.all(), values=res, id_k = id_k)
+         return render_template("add_article.html", cat=Categorey.query.all(), values=res, id_k = id_k, pg = -1)
+      else: return render_template("add_article.html", cat=Categorey.query.all(), values=res, id_k = id_k, pg = 0)
    
 
 with app.app_context():
