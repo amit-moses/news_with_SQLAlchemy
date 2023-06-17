@@ -66,7 +66,10 @@ def add_article(id = 0):
          res = res[0]
          id_k = res.id
          pks = Categorey(cat=f'Edit {res.title}',id='-1')
+      else: return redirect(f'/')
       return render_template("add_article.html", cat=Categorey.query.all(), values=res, id_k = id_k, pg = pks)
+   
+   
    
 
 with app.app_context():
