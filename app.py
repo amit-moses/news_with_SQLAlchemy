@@ -1,9 +1,14 @@
 from flask import Flask, render_template, redirect, request
 from flask_sqlalchemy import SQLAlchemy
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///news.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///news.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_HOST')
+
 db = SQLAlchemy(app)
 
 
@@ -23,20 +28,28 @@ class Categorey(db.Model):
 def news(pg = ''):
    pks = Categorey.query.filter(Categorey.cat.ilike(pg)).all()
    if len(pks) > 0:
-      articles = Article.query.filter(Article.category.ilike(pks[0].id)).all()
+      articles = Article.query.filter(Article.category.ilike(str(pks[0].id))).all()
       pks = pks[0]
    else:
       articles = Article.query.all()
       pks = Categorey(cat='All Articles',id='-1')
    return render_template("article.html", news=articles, cat=Categorey.query.all(), pg = pks)
 
+@app.route("/get/<id>", methods=["GET","POST"])
+def get(id):
+   arc = Article.query.get(id)
+   print(arc)
+   if arc: return 'ok'
+   else: return 'oo'
+
+
 @app.route("/delete/<id>", methods=["GET","POST"])
 def delete(id):
    goto=''
-   res = Article.query.filter(Article.id.ilike(id)).all()
-   if len(res)>0:
-      goto = Categorey.query.filter(Categorey.id.ilike(res[0].category)).all()[0].cat
-      db.session.delete(res[0])
+   res = Article.query.get(id)
+   if res:
+      goto = Categorey.query.get(res.category).cat
+      db.session.delete(res)
       db.session.commit()
    return redirect(f'/{goto}')
 
@@ -53,17 +66,16 @@ def add_article(id = 0):
          db.session.add(article)
          db.session.commit()
       else: 
-         res = Article.query.filter(Article.id.ilike(id)).all()
-         if len(res)>0:
-            res[0].title, res[0].content, res[0].image, res[0].category = title, content, image_url, category
+         res = Article.query.get(id)
+         if res:
+            res.title, res.content, res.image, res.category = title, content, image_url, category
          db.session.commit()
-      return redirect(f'/{Categorey.query.filter(Categorey.id.ilike(category)).all()[0].cat}')
+      return redirect(f'/{Categorey.query.get(category).cat}')
    else:
       id_k = 0
-      res = Article.query.filter(Article.id.ilike(id)).all()
+      res = Article.query.get(id)
       pks = Categorey(cat='Add new Article',id='0')
-      if id != 0 and len(res) > 0:
-         res = res[0]
+      if id != 0 and res:
          id_k = res.id
          pks = Categorey(cat=f'Edit {res.title}',id='-1')
       elif id != 0 and len(res) == 0: return redirect(f'/')
